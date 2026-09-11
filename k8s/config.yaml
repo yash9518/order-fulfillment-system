@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  POSTGRES_DB: order_fulfillment
+  DATABASE_URL: postgresql://postgres:postgrespassword@postgres-service:5432/order_fulfillment
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+stringData:
+  POSTGRES_PASSWORD: postgrespassword
+  SECRET_KEY: super_secure_production_secret_key_12345
