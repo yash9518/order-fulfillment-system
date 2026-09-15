@@ -30,6 +30,6 @@ A distributed backend microservice architecture featuring transactional order pr
 ## Quickstart & Local Setup
 
 ### 1. Environment Configuration
-Copy the example environment file:
+Copy the example environment template:
 ```bash
 cp .env.example .env
