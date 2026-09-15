@@ -11,7 +11,7 @@ from app.models import User, Product, Order
 from app.schemas import UserRegister, UserOut, Token, ProductCreate, ProductOut, OrderCreate, OrderOut
 from app.security import hash_password, verify_password
 
-Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(title="Order & Inventory Service")
 SECRET_KEY = os.getenv("SECRET_KEY")
