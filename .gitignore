@@ -7,3 +7,4 @@ orders.db
 *.db 
 orders.db 
 test.db 
+.env
