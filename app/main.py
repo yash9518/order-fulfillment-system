@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
+import os
 import jwt
 from datetime import datetime, timedelta, timezone
 
@@ -13,8 +14,9 @@ from app.security import hash_password, verify_password
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Order & Inventory Service")
-
-SECRET_KEY = "dev_secret_key_change_in_production"
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("CRITICAL: SECRET_KEY environment variable not set.")
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -38,6 +40,14 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
+
+def get_current_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin privileges required to perform this action"
+        )
+    return current_user
 
 # --- AUTH ENDPOINTS ---
 @app.post("/auth/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -71,7 +81,11 @@ def read_current_user(current_user: User = Depends(get_current_user)):
 
 # --- PRODUCT ENDPOINTS ---
 @app.post("/products", response_model=ProductOut, status_code=status.HTTP_201_CREATED)
-def create_product(product: ProductCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def create_product(
+    product: ProductCreate, 
+    db: Session = Depends(get_db), 
+    admin: User = Depends(get_current_admin)
+):
     db_product = Product(name=product.name, price=product.price, stock=product.stock)
     db.add(db_product)
     db.commit()
