@@ -1,4 +1,4 @@
-# Event-Driven Order & Inventory Management System
+# A transactional order and inventory service built as a modular monolith, designed to evolve into an event-driven architecture.
 
 A distributed backend microservice architecture featuring transactional order processing, pessimistic inventory locking, stateless JWT authentication, database schema migrations with Alembic, and cloud-native Kubernetes orchestration.
 
